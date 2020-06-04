@@ -3,9 +3,12 @@
 <h3>
     Name: {{ object.title }}
 </h3>
+<hr>
 Project Type: {{ object.project_type }}
-<br>
+<hr>
 Project Body: {{ object.project_body }}
+<hr>
+Project Image: 
 <br>
-Project Image: <img src="{{ object.project_image.url }}" alt="project_image">
+<img src="{{ object.project_image.url }}" alt="project_image">
 {% endblock %}
