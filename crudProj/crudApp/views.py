@@ -67,6 +67,8 @@ def user_login(request):
 @login_required(login_url='/user_login')
 def project_list(request, template_name='crudApp/project_list.html'):
     projects = Project.objects.all()
+    projects = projects.order_by('title')
+    print(projects)
     data = {}
     project_list = []
     if request.method == 'GET':
