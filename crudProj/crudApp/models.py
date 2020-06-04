@@ -8,7 +8,7 @@ from django.urls import reverse
 class UserProfileInfo(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     portfolio_site = models.URLField(blank=True)
-    profile_pic = models.ImageField(upload_to='profile_pics', blank=True)
+    profile_pic = models.ImageField(upload_to='profile_pics/', blank=True)
 
     def __str__(self):
         return self.user.username
@@ -38,7 +38,7 @@ class ProjectTag(models.Model):
 class Project(models.Model):
     title = models.CharField(max_length=200, null=False)
     slug = models.CharField(max_length=200, null=False, unique=True)
-    project_image = models.ImageField(upload_to='images/', blank=True)
+    project_image = models.ImageField(upload_to='images/', default='images/profile_pic.png')
     project_type = models.ForeignKey(ProjectType, on_delete=models.CASCADE, null=False)
     project_tags = models.ManyToManyField(ProjectTag)
     project_body = models.TextField(null=True)

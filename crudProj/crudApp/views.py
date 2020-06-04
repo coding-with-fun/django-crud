@@ -83,8 +83,6 @@ def project_list(request, template_name='crudApp/project_list.html'):
         data['object_list'] = project_list
     else:
         data['object_list'] = projects
-    print(projects[0])
-
     return render(request, template_name, data)
 
 
@@ -96,28 +94,32 @@ def project_view(request, slug, template_name='crudApp/project_detail.html'):
 
 @login_required(login_url='/user_login')
 def project_create(request, template_name='crudApp/project_form.html'):
-    form = ProjectForm(request.POST or None)
-    if form.is_valid():
-        if 'project_image' in request.FILES:
-            form.project_image = request.FILES['project_image']
-        form.save()
-        print(form.data)
-        return redirect('/projects')
+    if request.method == 'POST':
+        form = ProjectForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            print(form.data)
+            return redirect('/projects')
+        else:
+            print(form.errors)
+        return render(request, template_name, {'form': form})
     else:
-        print(form.errors)
-    return render(request, template_name, {'form': form})
+        form = ProjectForm()
+        return render(request, template_name, {'form': form})
 
 
 @login_required(login_url='/user_login')
 def project_update(request, slug, template_name='crudApp/project_form.html'):
     project = get_object_or_404(Project, slug=slug)
-    form = ProjectForm(request.POST or None, instance=project)
-    if form.is_valid():
-        if 'project_image' in request.FILES:
-            form.project_image = request.FILES['project_image']
-        form.save()
-        return redirect('/projects')
-    return render(request, template_name, {'form': form})
+    if request.method == 'POST':
+        form = ProjectForm(request.POST, request.FILES, instance=project)
+        if form.is_valid():
+            form.save()
+            return redirect('/projects')
+        return render(request, template_name, {'form': form})
+    else:
+        form = ProjectForm(instance=project)
+        return render(request, template_name, {'form': form})
 
 
 @login_required(login_url='/user_login')
