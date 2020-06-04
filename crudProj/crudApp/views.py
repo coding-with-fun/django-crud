@@ -98,7 +98,6 @@ def project_create(request, template_name='crudApp/project_form.html'):
         form = ProjectForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            print(form.data)
             return redirect('/projects')
         else:
             print(form.errors)
