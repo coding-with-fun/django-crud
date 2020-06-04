@@ -35,12 +35,12 @@ class ProjectTag(models.Model):
 
 
 class Project(models.Model):
-    title = models.CharField(max_length=200, null=False)
-    slug = models.CharField(max_length=200, null=False, unique=True)
+    title = models.CharField(max_length=200, blank=False)
+    slug = models.CharField(max_length=200, blank=False, unique=True)
     project_image = models.ImageField(upload_to='images/', default='images/project_sample.jpg')
     project_type = models.ForeignKey(ProjectType, on_delete=models.CASCADE, null=False)
-    project_tags = models.ManyToManyField(ProjectTag)
-    project_body = models.TextField(null=True)
+    project_tags = models.ManyToManyField(ProjectTag, blank=True)
+    project_body = models.TextField(blank=True)
 
     def __str__(self):
         return self.title
