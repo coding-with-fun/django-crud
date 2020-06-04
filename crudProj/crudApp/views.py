@@ -57,7 +57,7 @@ def user_login(request):
         if user:
             if user.is_active:
                 login(request, user)
-                return HttpResponseRedirect('../crudApp')
+                return HttpResponseRedirect('/crudApp')
             else:
                 return HttpResponse("Your account was inactive.")
         else:
@@ -83,11 +83,13 @@ def project_view(request, slug, template_name='crudApp/project_detail.html'):
 
 
 def project_create(request, template_name='crudApp/project_form.html'):
-    form = ProjectForm(request.POST, request.FILES)
+    form = ProjectForm(request.POST or None)
     if form.is_valid():
         form.save()
         print(form.data)
-        return redirect('project_list')
+        return redirect('/crudApp')
+    else:
+        print(form.errors)
     return render(request, template_name, {'form': form})
 
 
@@ -96,7 +98,7 @@ def project_update(request, slug, template_name='crudApp/project_form.html'):
     form = ProjectForm(request.POST or None, instance=project)
     if form.is_valid():
         form.save()
-        return redirect('project_list')
+        return redirect('/crudApp')
     return render(request, template_name, {'form': form})
 
 
@@ -104,5 +106,5 @@ def project_delete(request, slug, template_name='crudApp/project_confirm_delete.
     project = get_object_or_404(Project, slug=slug)
     if request.method == 'POST':
         project.delete()
-        return redirect('project_list')
+        return redirect('/crudApp')
     return render(request, template_name, {'object': project})
