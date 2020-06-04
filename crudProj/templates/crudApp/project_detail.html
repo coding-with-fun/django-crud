@@ -1,0 +1,11 @@
+{% extends "crudApp/base.html" %} {% block body_block %}
+<h1>Project Details</h1>
+<h2>
+    Name: {{ object.title }}
+</h2>
+Project Image: <img src="{{ object.project_image }}" alt="project_image">
+<br>
+Project Type: {{ object.project_type }}
+<br>
+Project Body: {{ object.project_body }}
+{% endblock %}

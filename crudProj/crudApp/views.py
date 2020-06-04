@@ -1,9 +1,11 @@
-from django.shortcuts import render
-from crudApp.forms import UserForm, UserProfileInfoForm
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+
+from crudApp.forms import UserForm, UserProfileInfoForm, ProjectForm
+from crudApp.models import Project
 
 
 def index(request):
@@ -33,7 +35,6 @@ def register(request):
             profile = profile_form.save(commit=False)
             profile.user = user
             if 'profile_pic' in request.FILES:
-                print('found it')
                 profile.profile_pic = request.FILES['profile_pic']
             profile.save()
             registered = True
@@ -56,7 +57,7 @@ def user_login(request):
         if user:
             if user.is_active:
                 login(request, user)
-                return HttpResponseRedirect(reverse('index'))
+                return HttpResponseRedirect('../crudApp')
             else:
                 return HttpResponse("Your account was inactive.")
         else:
@@ -66,3 +67,42 @@ def user_login(request):
             return HttpResponse("Invalid login details given")
     else:
         return render(request, 'crudApp/login.html', {})
+
+
+def project_list(request, template_name='crudApp/project_list.html'):
+    project = Project.objects.all()
+    data = {}
+    data['object_list'] = project
+    return render(request, template_name, data)
+
+
+def project_view(request, slug, template_name='crudApp/project_detail.html'):
+    project = get_object_or_404(Project, slug=slug)
+    print(project)
+    return render(request, template_name, {'object': project})
+
+
+def project_create(request, template_name='crudApp/project_form.html'):
+    form = ProjectForm(request.POST, request.FILES)
+    if form.is_valid():
+        form.save()
+        print(form.data)
+        return redirect('project_list')
+    return render(request, template_name, {'form': form})
+
+
+def project_update(request, slug, template_name='crudApp/project_form.html'):
+    project = get_object_or_404(Project, slug=slug)
+    form = ProjectForm(request.POST or None, instance=project)
+    if form.is_valid():
+        form.save()
+        return redirect('project_list')
+    return render(request, template_name, {'form': form})
+
+
+def project_delete(request, slug, template_name='crudApp/project_confirm_delete.html'):
+    project = get_object_or_404(Project, slug=slug)
+    if request.method == 'POST':
+        project.delete()
+        return redirect('project_list')
+    return render(request, template_name, {'object': project})

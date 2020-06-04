@@ -1,0 +1,32 @@
+{% extends "crudApp/base.html" %} {% block body_block %}
+<h1>Projects</h1>
+
+<table border="1">
+<thead>
+    <tr>
+    <th>Title</th>
+    <th>Project Image</th>
+    <th>Project Type</th>
+    <th>Project Body</th>
+    <th>View</th>
+    <th>Edit</th>
+    <th>Delete</th>
+    </tr>
+</thead>
+<tbody>
+    {% for project in object_list %}
+    <tr>
+    <td>{{ project.title }}</td>
+    <td><img src="{{ project.project_image }}" alt="project_image" style="width: 100%; float: left;"/></td>
+    <td>{{ project.project_type }}</td>
+    <td>{{ project.project_body }}</td>
+    <td><a href="{% url 'crudApp:project_view' project.title %}">view</a></td>
+    <td><a href="{% url 'crudApp:project_edit' project.title %}">edit</a></td>
+    <td><a href="{% url 'crudApp:project_delete' project.title %}">delete</a></td>
+    </tr>
+    {% endfor %}
+</tbody>
+</table>
+
+<a href="{% url "project_new" %}">New</a>
+{% endblock %}
