@@ -1,18 +1,21 @@
-from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponseRedirect, HttpResponse
-from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 
-from crudApp.forms import UserForm, UserProfileInfoForm, ProjectForm
-from crudApp.models import Project
+from crudApp.forms import ProjectForm, UserForm, UserProfileInfoForm
+from crudApp.models import Project, UserProfileInfo
 
 
 def index(request):
-    return render(request, 'crudApp/index.html')
+    user = UserProfileInfo.objects.all()
+    user_data = {}
+    user_data['object_list'] = user
+    return render(request, 'crudApp/index.html', user_data)
 
 
-@login_required
+@login_required(login_url='/user_login')
 def user_logout(request):
     logout(request)
     return HttpResponseRedirect(reverse('index'))
@@ -68,7 +71,6 @@ def user_login(request):
 def project_list(request, template_name='crudApp/project_list.html'):
     projects = Project.objects.all()
     projects = projects.order_by('title')
-    print(projects)
     data = {}
     project_list = []
     if request.method == 'GET':
@@ -81,6 +83,7 @@ def project_list(request, template_name='crudApp/project_list.html'):
         data['object_list'] = project_list
     else:
         data['object_list'] = projects
+    print(projects[0])
 
     return render(request, template_name, data)
 
@@ -88,7 +91,6 @@ def project_list(request, template_name='crudApp/project_list.html'):
 @login_required(login_url='/user_login')
 def project_view(request, slug, template_name='crudApp/project_detail.html'):
     project = get_object_or_404(Project, slug=slug)
-    print(project)
     return render(request, template_name, {'object': project})
 
 
@@ -96,6 +98,8 @@ def project_view(request, slug, template_name='crudApp/project_detail.html'):
 def project_create(request, template_name='crudApp/project_form.html'):
     form = ProjectForm(request.POST or None)
     if form.is_valid():
+        if 'project_image' in request.FILES:
+            form.project_image = request.FILES['project_image']
         form.save()
         print(form.data)
         return redirect('/projects')
@@ -109,6 +113,8 @@ def project_update(request, slug, template_name='crudApp/project_form.html'):
     project = get_object_or_404(Project, slug=slug)
     form = ProjectForm(request.POST or None, instance=project)
     if form.is_valid():
+        if 'project_image' in request.FILES:
+            form.project_image = request.FILES['project_image']
         form.save()
         return redirect('/projects')
     return render(request, template_name, {'form': form})
