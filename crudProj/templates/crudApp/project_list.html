@@ -29,15 +29,15 @@
     <tr style="text-align: left;">
       <td>{{ project.title }}</td>
       <td>{{ project.project_type }}</td>
-      <td><a href="{% url 'crudApp:project_view' project.slug %}">view</a></td>
-      <td><a href="{% url 'crudApp:project_edit' project.slug %}">edit</a></td>
+      <td><a href="{% url 'project_view' project.slug %}">view</a></td>
+      <td><a href="{% url 'project_edit' project.slug %}">edit</a></td>
       <td>
-        <a href="{% url 'crudApp:project_delete' project.slug %}">delete</a>
+        <a href="{% url 'project_delete' project.slug %}">delete</a>
       </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
 
-<a href="{% url 'crudApp:project_new' %}">New</a>
+<a href="{% url 'project_new' %}">New</a>
 {% endblock %}

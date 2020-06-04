@@ -13,11 +13,6 @@ def index(request):
 
 
 @login_required
-def special(request):
-    return HttpResponse("You are logged in !")
-
-
-@login_required
 def user_logout(request):
     logout(request)
     return HttpResponseRedirect(reverse('index'))
@@ -57,7 +52,7 @@ def user_login(request):
         if user:
             if user.is_active:
                 login(request, user)
-                return HttpResponseRedirect('/crudApp')
+                return HttpResponseRedirect('/projects')
             else:
                 return HttpResponse("Your account was inactive.")
         else:
@@ -69,6 +64,7 @@ def user_login(request):
         return render(request, 'crudApp/login.html', {})
 
 
+@login_required(login_url='/user_login')
 def project_list(request, template_name='crudApp/project_list.html'):
     projects = Project.objects.all()
     data = {}
@@ -87,35 +83,39 @@ def project_list(request, template_name='crudApp/project_list.html'):
     return render(request, template_name, data)
 
 
+@login_required(login_url='/user_login')
 def project_view(request, slug, template_name='crudApp/project_detail.html'):
     project = get_object_or_404(Project, slug=slug)
     print(project)
     return render(request, template_name, {'object': project})
 
 
+@login_required(login_url='/user_login')
 def project_create(request, template_name='crudApp/project_form.html'):
     form = ProjectForm(request.POST or None)
     if form.is_valid():
         form.save()
         print(form.data)
-        return redirect('/crudApp')
+        return redirect('/projects')
     else:
         print(form.errors)
     return render(request, template_name, {'form': form})
 
 
+@login_required(login_url='/user_login')
 def project_update(request, slug, template_name='crudApp/project_form.html'):
     project = get_object_or_404(Project, slug=slug)
     form = ProjectForm(request.POST or None, instance=project)
     if form.is_valid():
         form.save()
-        return redirect('/crudApp')
+        return redirect('/projects')
     return render(request, template_name, {'form': form})
 
 
+@login_required(login_url='/user_login')
 def project_delete(request, slug, template_name='crudApp/project_confirm_delete.html'):
     project = get_object_or_404(Project, slug=slug)
     if request.method == 'POST':
         project.delete()
-        return redirect('/crudApp')
+        return redirect('/projects')
     return render(request, template_name, {'object': project})
