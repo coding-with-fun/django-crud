@@ -70,9 +70,21 @@ def user_login(request):
 
 
 def project_list(request, template_name='crudApp/project_list.html'):
-    project = Project.objects.all()
+    projects = Project.objects.all()
     data = {}
-    data['object_list'] = project
+    project_list = []
+    if request.method == 'GET':
+        search_query = request.GET.get('search', "None")
+    
+    searched = False
+    for project in projects:
+        if search_query in project.title or search_query is project.slug:
+            project_list.append(project)
+            data['object_list'] = project_list
+            searched = True
+    if not searched:
+        data['object_list'] = projects
+
     return render(request, template_name, data)
 
 
